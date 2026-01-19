@@ -26,75 +26,54 @@ The key insight: **the agent lives in the cloud (Azure AI Foundry), but its tool
 
 ## Architecture Diagram
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0078D4', 'primaryTextColor': '#fff', 'primaryBorderColor': '#005A9E', 'lineColor': '#666666', 'secondaryColor': '#F3F2F1', 'tertiaryColor': '#E1DFDD', 'fontFamily': 'Segoe UI, sans-serif', 'fontSize': '14px'}}}%%
-
-flowchart TB
-    subgraph HUB[" "]
-        direction TB
-        HUB_LABEL["Azure AI Foundry Hub"]
-        
-        subgraph PROJECT[" "]
-            direction TB
-            PROJECT_LABEL["Azure AI Project"]
-            
-            subgraph SERVICE[" "]
-                direction TB
-                SERVICE_LABEL["Azure AI Agent Service"]
-                
-                subgraph RUNTIME[" "]
-                    direction TB
-                    RUNTIME_LABEL["Agent Runtime"]
-                    
-                    THREAD["Thread"]
-                    LLM["LLM"]
-                    PYTHON["Python Function Tool · In-Process"]
-                    
-                    THREAD --- LLM
-                    LLM --- PYTHON
-                end
-            end
-        end
-    end
-
-    subgraph EXTERNAL[" "]
-        direction TB
-        EXTERNAL_LABEL["External Tools · HTTPS"]
-        
-        FUNC["Azure Function"]
-        LOGIC["Logic App"]
-    end
-
-    PYTHON -.->|"HTTPS"| FUNC
-    PYTHON -.->|"HTTPS"| LOGIC
-
-    style HUB fill:#E8F4FD,stroke:#0078D4,stroke-width:2px
-    style HUB_LABEL fill:none,stroke:none,color:#0078D4,font-weight:bold
-    
-    style PROJECT fill:#D1E9FA,stroke:#0078D4,stroke-width:2px
-    style PROJECT_LABEL fill:none,stroke:none,color:#0078D4,font-weight:bold
-    
-    style SERVICE fill:#B8DDF7,stroke:#0078D4,stroke-width:2px
-    style SERVICE_LABEL fill:none,stroke:none,color:#0078D4,font-weight:bold
-    
-    style RUNTIME fill:#0078D4,stroke:#005A9E,stroke-width:2px
-    style RUNTIME_LABEL fill:none,stroke:none,color:#FFFFFF,font-weight:bold
-    
-    style THREAD fill:#9B59B6,stroke:#8E44AD,stroke-width:2px,color:#FFFFFF
-    style LLM fill:#3498DB,stroke:#2980B9,stroke-width:2px,color:#FFFFFF
-    style PYTHON fill:#27AE60,stroke:#1E8449,stroke-width:2px,color:#FFFFFF
-    
-    style EXTERNAL fill:#F8F9FA,stroke:#6C757D,stroke-width:2px,stroke-dasharray:5 5
-    style EXTERNAL_LABEL fill:none,stroke:none,color:#6C757D,font-weight:bold
-    
-    style FUNC fill:#F39C12,stroke:#D68910,stroke-width:2px,color:#FFFFFF
-    style LOGIC fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#FFFFFF
-
-    linkStyle 0,1 stroke:none
-    linkStyle 2,3 stroke:#666666,stroke-width:2px,stroke-dasharray:5 5
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  Azure AI Foundry Hub                                                        │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │  Azure AI Project                                                      │  │
+│  │  ┌──────────────────────────────────────────────────────────────────┐  │  │
+│  │  │  Azure AI Agent Service                                          │  │  │
+│  │  │  ┌────────────────────────────────────────────────────────────┐  │  │  │
+│  │  │  │  Agent Runtime                                             │  │  │  │
+│  │  │  │                                                            │  │  │  │
+│  │  │  │                    ┌─────────┐                             │  │  │  │
+│  │  │  │                    │  Thread │                             │  │  │  │
+│  │  │  │                    └────┬────┘                             │  │  │  │
+│  │  │  │                         │                                  │  │  │  │
+│  │  │  │                    ┌────▼────┐                             │  │  │  │
+│  │  │  │       ┌────────────│  Agent  │────────────┐                │  │  │  │
+│  │  │  │       │            └────┬────┘            │                │  │  │  │
+│  │  │  │       │                 │                 │                │  │  │  │
+│  │  │  │  ┌────▼────┐       ┌────▼────┐       ┌────▼────┐           │  │  │  │
+│  │  │  │  │   LLM   │       │ Python  │       │  HTTP   │           │  │  │  │
+│  │  │  │  │         │       │ Function│       │  Tool   │           │  │  │  │
+│  │  │  │  │ (runs   │       │  Tool   │       │         │           │  │  │  │
+│  │  │  │  │ in Azure│       │ (runs   │       │ (calls  │           │  │  │  │
+│  │  │  │  │ Foundry)│       │ in-proc)│       │ external│           │  │  │  │
+│  │  │  │  └─────────┘       └─────────┘       └────┬────┘           │  │  │  │
+│  │  │  │                                          │                 │  │  │  │
+│  │  │  └──────────────────────────────────────────┼─────────────────┘  │  │  │
+│  │  └─────────────────────────────────────────────┼────────────────────┘  │  │
+│  └────────────────────────────────────────────────┼───────────────────────┘  │
+└───────────────────────────────────────────────────┼──────────────────────────┘
+                                                    │
+                                               HTTPS calls
+                                                    │
+                          ┌─────────────────────────┼─────────────────────────┐
+                          │                         │                         │
+                     ┌────▼─────────┐         ┌─────▼────────┐                │
+                     │    Azure     │         │   Logic App  │                │
+                     │   Function   │         │              │                │
+                     │              │         │  • send_email│                │
+                     │ • analyze    │         │  • notify    │                │
+                     │ • process    │         │  • workflows │                │
+                     └──────────────┘         └──────────────┘                │
+                          │                         │                         │
+                          └─────────────────────────┴─────────────────────────┘
+                                      External Azure Services
 ```
 
-### Understanding the Architecture
+### Azure Hierarchy
 
 | Layer | What It Is |
 |-------|------------|
@@ -103,13 +82,15 @@ flowchart TB
 | **Azure AI Agent Service** | Managed service that hosts agents |
 | **Agent Runtime** | Where your agent executes |
 
-### Components Inside the Agent Runtime
+### Agent Components
 
 | Component | Purpose |
 |-----------|---------|
 | **Thread** | Maintains conversation state and history |
+| **Agent** | Orchestrates reasoning and tool calls |
 | **LLM** | The model that powers reasoning (GPT, Claude, etc.) |
 | **Python Function Tool** | Code that runs in-process inside the agent |
+| **HTTP Tool** | Makes external HTTPS calls to other services |
 
 ### External Tools (via HTTPS)
 
@@ -117,7 +98,6 @@ flowchart TB
 |------|------------|----------|
 | **Azure Function** | Serverless compute | Heavy processing, data analysis |
 | **Logic App** | Workflow engine | Email, Slack, integrations |
-| 🌐 **HTTP Tool** → Logic App | External workflow engine | Notifications, integrations | `send_email()`, `notify_slack()` |
 
 > **Key insight**: Python Function Tools run *inside* the agent (fast, no network hop). HTTP Tools call *external* services (scalable, independent).
 
