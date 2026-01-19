@@ -26,47 +26,51 @@ The key insight: **the agent lives in the cloud (Azure AI Foundry), but its tool
 
 ## Architecture Diagram
 
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0078D4', 'primaryTextColor': '#fff', 'primaryBorderColor': '#005A9E', 'lineColor': '#5C5C5C', 'secondaryColor': '#F3F2F1', 'tertiaryColor': '#E1DFDD', 'fontFamily': 'Segoe UI, sans-serif'}}}%%
+
+flowchart TB
+    subgraph FOUNDRY["☁️ &nbsp; AZURE AI FOUNDRY"]
+        direction TB
+        subgraph AGENT["🤖 &nbsp; Graduate Research Assistant &nbsp; · &nbsp; GPT-4"]
+            direction LR
+            INPROCESS["<b>In-Process Functions</b><br/><code>summarize()</code><br/><code>extract_insights()</code>"]
+            FUNC_TOOL["<b>Azure Function Tool</b><br/><i>HTTP connector</i>"]
+            LOGIC_TOOL["<b>Logic App Tool</b><br/><i>HTTP connector</i>"]
+        end
+    end
+
+    subgraph EXTERNAL["⚡ &nbsp; EXTERNAL SERVICES"]
+        direction LR
+        AZURE_FUNC["<b>Azure Function</b><br/><code>analyze_data()</code><br/><code>call_api()</code><br/><code>process_csv()</code><br/><br/>▸ Scales on demand<br/>▸ Pay per execution"]
+        LOGIC_APP["<b>Logic App</b><br/><code>send_email()</code><br/><code>notify_slack()</code><br/><code>trigger_workflow()</code><br/><br/>▸ Visual designer<br/>▸ 300+ connectors"]
+    end
+
+    FUNC_TOOL -->|"HTTPS"| AZURE_FUNC
+    LOGIC_TOOL -->|"HTTPS"| LOGIC_APP
+
+    style FOUNDRY fill:#E6F2FF,stroke:#0078D4,stroke-width:2px,color:#0078D4
+    style AGENT fill:#0078D4,stroke:#005A9E,stroke-width:2px,color:#FFFFFF
+    style EXTERNAL fill:#F9F9F9,stroke:#5C5C5C,stroke-width:1px,stroke-dasharray:5 5,color:#333
+    
+    style INPROCESS fill:#50E6A4,stroke:#2D8B5C,stroke-width:1px,color:#1A3D2A
+    style FUNC_TOOL fill:#FFB347,stroke:#CC8A30,stroke-width:1px,color:#5C3D00
+    style LOGIC_TOOL fill:#B19CD9,stroke:#7B68A6,stroke-width:1px,color:#3D2E5C
+    
+    style AZURE_FUNC fill:#FFB347,stroke:#CC8A30,stroke-width:2px,color:#5C3D00
+    style LOGIC_APP fill:#B19CD9,stroke:#7B68A6,stroke-width:2px,color:#3D2E5C
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        AZURE AI FOUNDRY                             │
-│                     (Your Agent Runtime)                            │
-│                                                                     │
-│   ┌─────────────────────────────────────────────────────────────┐  │
-│   │                                                              │  │
-│   │              🤖 Graduate Research Assistant                  │  │
-│   │                      (GPT-4 Agent)                          │  │
-│   │                                                              │  │
-│   │   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │  │
-│   │   │ In-Process   │  │   Azure      │  │   Logic      │     │  │
-│   │   │ Functions    │  │   Function   │  │    App       │     │  │
-│   │   │              │  │   Tool       │  │    Tool      │     │  │
-│   │   │ • summarize  │  │              │  │              │     │  │
-│   │   │ • extract    │  │              │  │              │     │  │
-│   │   └──────────────┘  └──────┬───────┘  └──────┬───────┘     │  │
-│   │         ▲                  │                  │              │  │
-│   │         │                  │                  │              │  │
-│   │    runs inside             │                  │              │  │
-│   │                            │                  │              │  │
-│   └────────────────────────────┼──────────────────┼──────────────┘  │
-│                                │                  │                  │
-└────────────────────────────────┼──────────────────┼──────────────────┘
-                                 │                  │
-                    HTTPS call   │                  │   HTTPS call
-                                 ▼                  ▼
-              ┌──────────────────────┐    ┌──────────────────────┐
-              │                      │    │                      │
-              │    AZURE FUNCTION    │    │     LOGIC APP        │
-              │                      │    │                      │
-              │  • analyze_data()    │    │  • send_email()      │
-              │  • call_api()        │    │  • notify_slack()    │
-              │  • process_csv()     │    │  • trigger_workflow()│
-              │                      │    │                      │
-              │   Runs independently │    │   Runs independently │
-              │   Scales on demand   │    │   Visual designer    │
-              │   Pay per execution  │    │   300+ connectors    │
-              │                      │    │                      │
-              └──────────────────────┘    └──────────────────────┘
-```
+
+<details>
+<summary><b>📖 Reading the Diagram</b></summary>
+
+| Color | Component | Runs Where |
+|:-----:|-----------|------------|
+| 🟢 Green | In-process functions | Inside the agent |
+| 🟠 Orange | Azure Function | Independent Azure service |
+| 🟣 Purple | Logic App | Independent Azure service |
+
+</details>
 
 ## Why This Architecture?
 
