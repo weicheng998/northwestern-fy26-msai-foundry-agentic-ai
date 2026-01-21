@@ -40,7 +40,7 @@ Why it matters:
 - **Security** — Centralized auth, audit, and access control
 - **Discovery** — Agents can find and learn new tools dynamically
 
-*We'll explore MCP in future labs.*
+In Labs 4-5, you'll build an MCP server with Azure Functions and connect it to an AI agent using Microsoft's Agent Framework.
 
 ## Assignments
 
@@ -50,13 +50,36 @@ See the full assignment details: **[Week 3 Assignment](docs/asigments.md)**
 
 Build step by step — don't try to do everything at once:
 
-| Step | Lab | What You'll Build |
-|------|-----|-------------------|
-| 1 | [Lab 1: Azure Functions](notebooks/lab1_azure_functions.ipynb) | Create and deploy an Azure Function |
-| 2 | [Lab 2: Logic Apps](notebooks/lab2_logic_apps.ipynb) | Create and configure a Logic App |
-| 3 | [Lab 3: Single Agent Tool Calling](notebooks/lab3_single_agent_tool_calling.ipynb) | Build your agent, add tools, chat with it |
+### Part 1: HTTP Tool Pattern (Labs 1-3)
+Connect agents to tools via direct HTTP calls.
 
-> **Tip**: Complete Lab 1 OR Lab 2 first (depending on which tool you choose), then move to Lab 3 to wire everything together.
+| Lab | What You'll Build |
+|-----|-------------------|
+| [Lab 1: Azure Functions](notebooks/lab1_azure_functions.ipynb) | Create and deploy an Azure Function as an HTTP tool |
+| [Lab 2: Logic Apps](notebooks/lab2_logic_apps.ipynb) | Create a Logic App as an HTTP tool (no code) |
+| [Lab 3: Single Agent + HTTP Tools](notebooks/lab3_single_agent_tool_calling.ipynb) | Build an agent and connect it to your HTTP tools |
+
+### Part 2: MCP Pattern (Labs 4-5)
+Connect agents to tools via the Model Context Protocol.
+
+| Lab | What You'll Build |
+|-----|-------------------|
+| [Lab 4: MCP Server](notebooks/lab4_mcp_server_azure_functions.ipynb) | Build an MCP server using Azure Functions |
+| [Lab 5: Agent + MCP](notebooks/lab5_single_agent_mcp_integration.ipynb) | Connect an agent to MCP servers (local & remote) |
+
+**Learning Path:**
+```
+┌─────────────────────────────────────┐     ┌─────────────────────────────────┐
+│  Part 1: HTTP Tools                 │     │  Part 2: MCP                    │
+│                                     │     │                                 │
+│  Lab 1 (Azure Function) ──┐         │     │  Lab 4 (MCP Server)             │
+│                           ├─▶ Lab 3 │     │         │                       │
+│  Lab 2 (Logic App) ───────┘         │     │         ▼                       │
+│                                     │     │  Lab 5 (Agent + MCP)            │
+└─────────────────────────────────────┘     └─────────────────────────────────┘
+```
+
+> **Tip**: Part 1 teaches HTTP tool integration. Part 2 teaches MCP — a standardized protocol for tool discovery and execution.
 
 ## Getting Started
 

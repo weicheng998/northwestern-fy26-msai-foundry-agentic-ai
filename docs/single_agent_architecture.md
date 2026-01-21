@@ -153,3 +153,10 @@ Ready to build? Head to the notebooks:
 1. **[Lab 1](../notebooks/lab1_azure_functions.ipynb)** — Create an Azure Function
 2. **[Lab 2](../notebooks/lab2_logic_apps.ipynb)** — Create a Logic App  
 3. **[Lab 3](../notebooks/lab3_single_agent_tool_calling.ipynb)** — Wire it all together in Azure AI Foundry
+
+### Beyond HTTP Tools: MCP
+
+Once you've mastered HTTP tools, explore **Model Context Protocol (MCP)** for standardized tool discovery:
+
+4. **[Lab 4](../notebooks/lab4_mcp_server_azure_functions.ipynb)** — Build an MCP server with Azure Functions
+5. **[Lab 5](../notebooks/lab5_single_agent_mcp_integration.ipynb)** — Connect AI agents to MCP servers

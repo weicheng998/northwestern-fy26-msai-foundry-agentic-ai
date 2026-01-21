@@ -43,24 +43,26 @@ The notebooks use `python-dotenv` to load secrets from a `.env` file.
 |-----|------------------|
 | Lab 1 | `AZURE_FUNCTION_URL`, `AZURE_FUNCTION_KEY` |
 | Lab 2 | `LOGIC_APP_URL` |
-| Lab 3 | `PROJECT_ENDPOINT`, `MODEL_DEPLOYMENT_NAME` + variables from Lab 1 or 2 |
+| Lab 3 | `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AI_MODEL_DEPLOYMENT_NAME` + variables from Lab 1 or 2 |
+| Lab 4 | Uses `azd` to manage environment variables automatically |
+| Lab 5 | `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AI_MODEL_DEPLOYMENT_NAME` + MCP variables from Lab 4 |
 
 Open `.env` and uncomment/fill in only what you need:
 
 ```bash
-# Uncomment and fill in for Lab 1
+# Azure AI Foundry (Lab 3, Lab 5)
+AZURE_AI_PROJECT_ENDPOINT=https://your-project.services.ai.azure.com
+AZURE_AI_MODEL_DEPLOYMENT_NAME=gpt-4o
+
+# Azure Functions (Lab 1)
 # AZURE_FUNCTION_URL=https://your-function-app.azurewebsites.net/api/analyze_data
 # AZURE_FUNCTION_KEY=your-function-key-here
 
-# Uncomment and fill in for Lab 2
+# Logic Apps (Lab 2)
 # LOGIC_APP_URL=https://prod-xx.eastus.logic.azure.com/workflows/...
-
-# Uncomment and fill in for Lab 3
-# PROJECT_ENDPOINT=https://your-project.services.ai.azure.com
-# MODEL_DEPLOYMENT_NAME=gpt-4o
 ```
 
-> **How it works**: Each notebook calls `load_dotenv()` which reads your `.env` file and makes the values available via `os.getenv()`.
+> **Note**: Lab 4 creates its own `.env` file in `src/tool_registry/mcps/` using `azd`. Lab 5 loads both the project `.env` and the Lab 4 MCP `.env` automatically.
 
 ## Step 4: Open in VS Code
 
@@ -81,5 +83,7 @@ Each lab will guide you through the Azure services you need:
 | [Lab 1: Azure Functions](../notebooks/lab1_azure_functions.ipynb) | Azure Function App |
 | [Lab 2: Logic Apps](../notebooks/lab2_logic_apps.ipynb) | Azure Logic App |
 | [Lab 3: Single Agent Tool Calling](../notebooks/lab3_single_agent_tool_calling.ipynb) | Azure AI Foundry |
+| [Lab 4: MCP Server](../notebooks/lab4_mcp_server_azure_functions.ipynb) | Azure Functions + Azure Developer CLI |
+| [Lab 5: Agent + MCP](../notebooks/lab5_single_agent_mcp_integration.ipynb) | Azure AI Foundry + MCP Server from Lab 4 |
 
-Start with the lab that matches your assignment choice. Each notebook includes setup instructions for the specific Azure resources you'll need.
+Start with the lab that matches your assignment. Each notebook includes setup instructions for the specific Azure resources you'll need.

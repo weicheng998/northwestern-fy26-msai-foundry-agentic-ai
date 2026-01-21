@@ -1,23 +1,37 @@
 # Labs
 
-| Lab | What You Build | Why |
-|-----|----------------|-----|
-| [Lab 1](lab1_azure_functions.ipynb) | Azure Function | Create a tool that runs code in the cloud |
-| [Lab 2](lab2_logic_apps.ipynb) | Logic App | Create a tool that sends notifications (no code) |
-| [Lab 3](lab3_single_agent_tool_calling.ipynb) | AI Agent + Tools | Wire it all together in Azure AI Foundry |
-| [Lab 4](lab4_mcp_server_azure_functions.ipynb) | MCP Server | Build an MCP server with Azure Functions |
-| [Lab 5](lab5_single_agent_mcp_integration.ipynb) | Agent + MCP | Connect AI agents to your MCP servers |
+## Part 1: HTTP Tool Pattern
+
+Connect agents to tools via direct HTTP calls.
+
+| Lab | What You Build |
+|-----|----------------|
+| [Lab 1](lab1_azure_functions.ipynb) | Azure Function as an HTTP tool |
+| [Lab 2](lab2_logic_apps.ipynb) | Logic App as an HTTP tool (no code) |
+| [Lab 3](lab3_single_agent_tool_calling.ipynb) | AI Agent connected to HTTP tools |
+
+## Part 2: MCP Pattern
+
+Connect agents to tools via the Model Context Protocol.
+
+| Lab | What You Build |
+|-----|----------------|
+| [Lab 4](lab4_mcp_server_azure_functions.ipynb) | MCP Server using Azure Functions |
+| [Lab 5](lab5_single_agent_mcp_integration.ipynb) | AI Agent connected to MCP servers |
 
 ## Learning Path
 
 ```
-Lab 1 (Azure Functions) ──┐
-                          ├──▶ Lab 3 (Agent + Tools) ──▶ Lab 4 (MCP Server) ──▶ Lab 5 (Agent + MCP)
-Lab 2 (Logic Apps) ───────┘
+┌─────────────────────────────────────┐     ┌─────────────────────────────────┐
+│  Part 1: HTTP Tools                 │     │  Part 2: MCP                    │
+│                                     │     │                                 │
+│  Lab 1 (Azure Function) ──┐         │     │  Lab 4 (MCP Server)             │
+│                           ├─▶ Lab 3 │     │         │                       │
+│  Lab 2 (Logic App) ───────┘         │     │         ▼                       │
+│                                     │     │  Lab 5 (Agent + MCP)            │
+└─────────────────────────────────────┘     └─────────────────────────────────┘
 ```
 
-**Recommended order:**
-1. Start with **Lab 1** or **Lab 2** (or both)
-2. Complete **Lab 3** to build your first AI agent
-3. Complete **Lab 4** to create an MCP server
-4. Complete **Lab 5** to connect agents to MCP servers
+**Part 1** (Labs 1-3): Build tools as HTTP endpoints, then connect them to an agent.
+
+**Part 2** (Labs 4-5): Build an MCP server, then connect an agent using the MCP protocol.
