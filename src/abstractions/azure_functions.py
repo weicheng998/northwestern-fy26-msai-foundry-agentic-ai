@@ -6,7 +6,7 @@ within an AI Foundry agent workflow.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 import requests
@@ -27,9 +27,7 @@ class FunctionConfig(BaseModel):
     """
 
     function_url: str = Field(..., description="Azure Function HTTP endpoint URL")
-    function_key: Optional[str] = Field(
-        None, description="Function key for authentication"
-    )
+    function_key: str | None = Field(None, description="Function key for authentication")
     use_managed_identity: bool = Field(
         False, description="Use Azure Managed Identity for authentication"
     )
@@ -68,7 +66,7 @@ class AzureFunctionsClient:
         """
         try:
             self.config = config
-            self._credential: Optional[DefaultAzureCredential] = None
+            self._credential: DefaultAzureCredential | None = None
 
             if self.config.use_managed_identity:
                 self._credential = DefaultAzureCredential()
@@ -79,7 +77,7 @@ class AzureFunctionsClient:
             logger.error(f"Failed to initialize Azure Functions client: {str(e)}")
             raise ValueError(f"Client initialization failed: {str(e)}") from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get HTTP headers for the request.
 
         :return: Dictionary containing Content-Type and optional authentication headers.
@@ -92,9 +90,7 @@ class AzureFunctionsClient:
 
         return headers
 
-    def invoke_function(
-        self, payload: Dict[str, Any], method: str = "POST"
-    ) -> Dict[str, Any]:
+    def invoke_function(self, payload: dict[str, Any], method: str = "POST") -> dict[str, Any]:
         """Invoke an Azure Function synchronously.
 
         :param payload: JSON payload to send to the function.
@@ -117,9 +113,7 @@ class AzureFunctionsClient:
             response.raise_for_status()
 
             result = response.json()
-            logger.info(
-                f"Function invocation successful. Status: {response.status_code}"
-            )
+            logger.info(f"Function invocation successful. Status: {response.status_code}")
             return result
 
         except requests.RequestException as e:
@@ -130,8 +124,8 @@ class AzureFunctionsClient:
             raise
 
     async def invoke_function_async(
-        self, payload: Dict[str, Any], method: str = "POST"
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any], method: str = "POST"
+    ) -> dict[str, Any]:
         """Invoke an Azure Function asynchronously.
 
         :param payload: JSON payload to send to the function.
@@ -140,9 +134,7 @@ class AzureFunctionsClient:
         :raises aiohttp.ClientError: If the HTTP request fails.
         :raises ValueError: If the response cannot be parsed as JSON.
         """
-        logger.info(
-            f"Invoking Azure Function asynchronously: {self.config.function_url}"
-        )
+        logger.info(f"Invoking Azure Function asynchronously: {self.config.function_url}")
         logger.debug(f"Request method: {method}, payload keys: {list(payload.keys())}")
 
         try:
@@ -157,9 +149,7 @@ class AzureFunctionsClient:
                     response.raise_for_status()
                     result = await response.json()
 
-                    logger.info(
-                        f"Async function invocation successful. Status: {response.status}"
-                    )
+                    logger.info(f"Async function invocation successful. Status: {response.status}")
                     return result
 
         except aiohttp.ClientError as e:
@@ -194,7 +184,7 @@ class DataProcessorFunction:
         self.client = AzureFunctionsClient(config)
         logger.info("Initialized DataProcessorFunction")
 
-    def process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def process_data(self, data: dict[str, Any]) -> dict[str, Any]:
         """Process data using the Azure Function.
 
         Args:
@@ -241,9 +231,7 @@ class IntegrationFunction:
         self.client = AzureFunctionsClient(config)
         logger.info("Initialized IntegrationFunction")
 
-    def call_external_service(
-        self, service: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def call_external_service(self, service: str, params: dict[str, Any]) -> dict[str, Any]:
         """Call an external service through the Azure Function.
 
         Args:
@@ -256,9 +244,7 @@ class IntegrationFunction:
         logger.info(f"Calling external service '{service}' through Azure Function")
 
         try:
-            result = self.client.invoke_function(
-                {"service": service, "parameters": params}
-            )
+            result = self.client.invoke_function({"service": service, "parameters": params})
             logger.info(f"External service call to '{service}' completed successfully")
             return result
         except Exception as e:

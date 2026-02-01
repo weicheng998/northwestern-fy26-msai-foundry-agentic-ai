@@ -1,13 +1,13 @@
 """Unit tests for Azure Functions abstractions."""
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, Any
+from typing import Any
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from src.abstractions.azure_functions import (
-    FunctionConfig,
     AzureFunctionsClient,
     DataProcessorFunction,
+    FunctionConfig,
     IntegrationFunction,
 )
 
@@ -15,7 +15,7 @@ from src.abstractions.azure_functions import (
 class TestFunctionConfig:
     """Tests for FunctionConfig model."""
 
-    def test_valid_config(self, sample_function_config: Dict[str, Any]) -> None:
+    def test_valid_config(self, sample_function_config: dict[str, Any]) -> None:
         """Test creating a valid function configuration."""
         config = FunctionConfig(**sample_function_config)
 
@@ -28,7 +28,7 @@ class TestFunctionConfig:
         with pytest.raises(ValueError, match="must start with http"):
             FunctionConfig(function_url="invalid-url", function_key="test_key")
 
-    def test_timeout_validation(self, sample_function_config: Dict[str, Any]) -> None:
+    def test_timeout_validation(self, sample_function_config: dict[str, Any]) -> None:
         """Test timeout validation."""
         # Valid timeout
         config = FunctionConfig(**sample_function_config)
@@ -45,9 +45,7 @@ class TestFunctionConfig:
 class TestAzureFunctionsClient:
     """Tests for AzureFunctionsClient."""
 
-    def test_initialization_with_key(
-        self, sample_function_config: Dict[str, Any]
-    ) -> None:
+    def test_initialization_with_key(self, sample_function_config: dict[str, Any]) -> None:
         """Test client initialization with function key."""
         config = FunctionConfig(**sample_function_config)
         client = AzureFunctionsClient(config)
@@ -56,7 +54,7 @@ class TestAzureFunctionsClient:
         assert client._credential is None
 
     def test_initialization_with_managed_identity(
-        self, sample_function_config: Dict[str, Any]
+        self, sample_function_config: dict[str, Any]
     ) -> None:
         """Test client initialization with managed identity."""
         config_dict = sample_function_config.copy()
@@ -69,7 +67,7 @@ class TestAzureFunctionsClient:
 
             assert client._credential is not None
 
-    def test_get_headers(self, sample_function_config: Dict[str, Any]) -> None:
+    def test_get_headers(self, sample_function_config: dict[str, Any]) -> None:
         """Test header generation."""
         config = FunctionConfig(**sample_function_config)
         client = AzureFunctionsClient(config)
@@ -83,9 +81,9 @@ class TestAzureFunctionsClient:
     def test_invoke_function_success(
         self,
         mock_request: Mock,
-        sample_function_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_function_config: dict[str, Any],
+        sample_payload: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test successful function invocation."""
         # Setup mock
@@ -106,8 +104,8 @@ class TestAzureFunctionsClient:
     def test_invoke_function_failure(
         self,
         mock_request: Mock,
-        sample_function_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
+        sample_function_config: dict[str, Any],
+        sample_payload: dict[str, Any],
     ) -> None:
         """Test function invocation failure."""
         # Setup mock to raise exception
@@ -128,9 +126,9 @@ class TestAzureFunctionsClient:
     async def test_invoke_function_async(
         self,
         mock_session: Mock,
-        sample_function_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_function_config: dict[str, Any],
+        sample_payload: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test async function invocation."""
         # Setup mock
@@ -162,8 +160,8 @@ class TestDataProcessorFunction:
     def test_process_data(
         self,
         mock_invoke: Mock,
-        sample_function_config: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_function_config: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test data processing."""
         mock_invoke.return_value = mock_response_data
@@ -185,8 +183,8 @@ class TestIntegrationFunction:
     def test_call_external_service(
         self,
         mock_invoke: Mock,
-        sample_function_config: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_function_config: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test external service call."""
         mock_invoke.return_value = mock_response_data

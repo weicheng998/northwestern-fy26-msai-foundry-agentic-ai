@@ -9,19 +9,21 @@ By participating in this project, you agree to maintain a respectful and collabo
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/northwestern-msai-foundry-agent-extension.git`
+2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/northwestern-fy26-msai-foundry-agentic-ai.git`
 3. Create a branch: `git checkout -b feature/your-feature-name`
-4. Install dependencies: `pip install -r requirements.txt`
+4. Install dependencies: `uv sync --all-extras --dev`
 
 ## Development Setup
 
 ```bash
-# Install development dependencies
-pip install -r requirements.txt
-pip install pre-commit
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install all dependencies
+uv sync --all-extras --dev
 
 # Set up pre-commit hooks (optional but recommended)
-pre-commit install
+uv run pre-commit install
 ```
 
 ## Code Quality Standards
@@ -29,15 +31,15 @@ pre-commit install
 ### 1. Code Style
 
 - **PEP 8 Compliance**: All code must follow PEP 8 guidelines
-- **Black Formatting**: Use Black for code formatting
+- **Ruff Formatting**: Use Ruff for code formatting
 - **Ruff Linting**: Code must pass Ruff linting checks
 
 ```bash
-# Format code with Black
-black src/ tests/
+# Format code with Ruff
+uv run poe fmt
 
-# Check with Ruff
-ruff check src/ tests/
+# Check with Ruff linter
+uv run poe lint
 ```
 
 ### 2. Type Hints
@@ -140,16 +142,16 @@ def test_example_function(sample_data):
 
 ```bash
 # Run all tests
-pytest tests/ -v
+uv run poe test
 
-# Run with coverage
-pytest tests/ -v --cov=src --cov-report=term-missing
+# Run with coverage (same as above, coverage is included)
+uv run pytest tests/ -v --cov=src --cov-report=term-missing
 
 # Run specific test file
-pytest tests/test_azure_functions.py -v
+uv run pytest tests/test_azure_functions.py -v
 
 # Run tests with markers
-pytest tests/ -v -m unit
+uv run pytest tests/ -v -m unit
 ```
 
 ### Test Markers
@@ -164,10 +166,7 @@ pytest tests/ -v -m unit
 2. **Add Tests**: Include tests for new features
 3. **Run Quality Checks**: Ensure all checks pass
    ```bash
-   ruff check src/ tests/
-   black --check src/ tests/
-   mypy src/
-   pytest tests/ -v
+   uv run poe check  # Runs fmt, lint, pyright, and test
    ```
 4. **Update CHANGELOG**: Add your changes to CHANGELOG.md (if exists)
 5. **Write Clear Commit Messages**: Follow conventional commits format

@@ -1,7 +1,7 @@
 """Pytest configuration and fixtures."""
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 import pytest
 
@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 @pytest.fixture
-def sample_function_config() -> Dict[str, Any]:
+def sample_function_config() -> dict[str, Any]:
     """Provide sample Azure Function configuration.
 
     Returns:
@@ -26,7 +26,7 @@ def sample_function_config() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def sample_logic_app_config() -> Dict[str, Any]:
+def sample_logic_app_config() -> dict[str, Any]:
     """Provide sample Logic App configuration.
 
     Returns:
@@ -39,7 +39,7 @@ def sample_logic_app_config() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def sample_payload() -> Dict[str, Any]:
+def sample_payload() -> dict[str, Any]:
     """Provide sample request payload.
 
     Returns:
@@ -49,7 +49,7 @@ def sample_payload() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_response_data() -> Dict[str, Any]:
+def mock_response_data() -> dict[str, Any]:
     """Provide mock response data.
 
     Returns:

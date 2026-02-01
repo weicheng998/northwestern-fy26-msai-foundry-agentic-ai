@@ -1,14 +1,14 @@
 """Unit tests for Logic Apps abstractions."""
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, Any
+from typing import Any
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from src.abstractions.logic_apps import (
     LogicAppConfig,
     LogicAppsClient,
-    WorkflowOrchestrator,
     NotificationWorkflow,
+    WorkflowOrchestrator,
     WorkflowStatus,
 )
 
@@ -16,7 +16,7 @@ from src.abstractions.logic_apps import (
 class TestLogicAppConfig:
     """Tests for LogicAppConfig model."""
 
-    def test_valid_config(self, sample_logic_app_config: Dict[str, Any]) -> None:
+    def test_valid_config(self, sample_logic_app_config: dict[str, Any]) -> None:
         """Test creating a valid Logic App configuration."""
         config = LogicAppConfig(**sample_logic_app_config)
 
@@ -28,7 +28,7 @@ class TestLogicAppConfig:
         with pytest.raises(ValueError, match="must start with http"):
             LogicAppConfig(workflow_url="invalid-url")
 
-    def test_timeout_validation(self, sample_logic_app_config: Dict[str, Any]) -> None:
+    def test_timeout_validation(self, sample_logic_app_config: dict[str, Any]) -> None:
         """Test timeout validation."""
         # Valid timeout
         config = LogicAppConfig(**sample_logic_app_config)
@@ -45,7 +45,7 @@ class TestLogicAppConfig:
 class TestLogicAppsClient:
     """Tests for LogicAppsClient."""
 
-    def test_initialization(self, sample_logic_app_config: Dict[str, Any]) -> None:
+    def test_initialization(self, sample_logic_app_config: dict[str, Any]) -> None:
         """Test client initialization."""
         config = LogicAppConfig(**sample_logic_app_config)
         client = LogicAppsClient(config)
@@ -54,7 +54,7 @@ class TestLogicAppsClient:
         assert client._credential is None
 
     def test_initialization_with_managed_identity(
-        self, sample_logic_app_config: Dict[str, Any]
+        self, sample_logic_app_config: dict[str, Any]
     ) -> None:
         """Test client initialization with managed identity."""
         config_dict = sample_logic_app_config.copy()
@@ -66,7 +66,7 @@ class TestLogicAppsClient:
 
             assert client._credential is not None
 
-    def test_get_headers(self, sample_logic_app_config: Dict[str, Any]) -> None:
+    def test_get_headers(self, sample_logic_app_config: dict[str, Any]) -> None:
         """Test header generation."""
         config = LogicAppConfig(**sample_logic_app_config)
         client = LogicAppsClient(config)
@@ -79,9 +79,9 @@ class TestLogicAppsClient:
     def test_trigger_workflow_success(
         self,
         mock_post: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        sample_payload: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test successful workflow trigger."""
         # Setup mock
@@ -102,8 +102,8 @@ class TestLogicAppsClient:
     def test_trigger_workflow_empty_response(
         self,
         mock_post: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        sample_payload: dict[str, Any],
     ) -> None:
         """Test workflow trigger with empty response."""
         # Setup mock
@@ -124,8 +124,8 @@ class TestLogicAppsClient:
     def test_trigger_workflow_failure(
         self,
         mock_post: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        sample_payload: dict[str, Any],
     ) -> None:
         """Test workflow trigger failure."""
         # Setup mock to raise exception
@@ -146,9 +146,9 @@ class TestLogicAppsClient:
     async def test_trigger_workflow_async(
         self,
         mock_session: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        sample_payload: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        sample_payload: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test async workflow trigger."""
         # Setup mock
@@ -180,8 +180,8 @@ class TestWorkflowOrchestrator:
     def test_execute_workflow(
         self,
         mock_trigger: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test workflow execution."""
         mock_trigger.return_value = mock_response_data
@@ -189,9 +189,7 @@ class TestWorkflowOrchestrator:
         config = LogicAppConfig(**sample_logic_app_config)
         orchestrator = WorkflowOrchestrator(config)
 
-        result = orchestrator.execute_workflow(
-            workflow_type="approval", data={"request": "test"}
-        )
+        result = orchestrator.execute_workflow(workflow_type="approval", data={"request": "test"})
 
         assert result == mock_response_data
         mock_trigger.assert_called_once()
@@ -205,8 +203,8 @@ class TestNotificationWorkflow:
     def test_send_notification(
         self,
         mock_trigger: Mock,
-        sample_logic_app_config: Dict[str, Any],
-        mock_response_data: Dict[str, Any],
+        sample_logic_app_config: dict[str, Any],
+        mock_response_data: dict[str, Any],
     ) -> None:
         """Test sending notification."""
         mock_trigger.return_value = mock_response_data

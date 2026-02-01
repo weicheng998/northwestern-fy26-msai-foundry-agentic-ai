@@ -6,7 +6,8 @@ This module provides integration between Microsoft Agent Framework and Azure ser
 """
 
 import logging
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import FunctionTool
@@ -14,7 +15,7 @@ from azure.identity import DefaultAzureCredential
 from pydantic import BaseModel, Field
 
 from src.abstractions.azure_functions import AzureFunctionsClient, FunctionConfig
-from src.abstractions.logic_apps import LogicAppsClient, LogicAppConfig
+from src.abstractions.logic_apps import LogicAppConfig, LogicAppsClient
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +30,7 @@ class AgentConfig(BaseModel):
         instructions: System instructions for the agent.
     """
 
-    project_endpoint: str = Field(
-        ..., description="Azure AI Foundry project endpoint URL"
-    )
+    project_endpoint: str = Field(..., description="Azure AI Foundry project endpoint URL")
     use_managed_identity: bool = Field(
         True, description="Use Azure Managed Identity for authentication"
     )
@@ -75,23 +74,21 @@ class FoundryAgent:
         :raises ValueError: If configuration is invalid or credentials cannot be obtained.
         """
         self.config = config
-        self._tools: Dict[str, Callable] = {}
-        self._function_tools: List[FunctionTool] = []
+        self._tools: dict[str, Callable] = {}
+        self._function_tools: list[FunctionTool] = []
 
         try:
             credential = DefaultAzureCredential()
             self._client = AIProjectClient(
                 endpoint=self.config.project_endpoint, credential=credential
             )
-            logger.info(
-                f"Initialized Foundry Agent with project: {self.config.project_endpoint}"
-            )
+            logger.info(f"Initialized Foundry Agent with project: {self.config.project_endpoint}")
         except Exception as e:
             logger.error(f"Failed to initialize Foundry Agent: {str(e)}")
             raise ValueError(f"Agent initialization failed: {str(e)}") from e
 
     def register_azure_function_tool(
-        self, name: str, config: FunctionConfig, description: Optional[str] = None
+        self, name: str, config: FunctionConfig, description: str | None = None
     ) -> None:
         """Register an Azure Function as an agent tool.
 
@@ -103,7 +100,7 @@ class FoundryAgent:
         try:
             client = AzureFunctionsClient(config)
 
-            def tool_function(**kwargs: Any) -> Dict[str, Any]:
+            def tool_function(**kwargs: Any) -> dict[str, Any]:
                 """Wrapper function for Azure Function invocation."""
                 logger.info(f"Invoking Azure Function tool: {name}")
                 try:
@@ -141,7 +138,7 @@ class FoundryAgent:
             ) from e
 
     def register_logic_app_tool(
-        self, name: str, config: LogicAppConfig, description: Optional[str] = None
+        self, name: str, config: LogicAppConfig, description: str | None = None
     ) -> None:
         """Register a Logic App workflow as an agent tool.
 
@@ -153,7 +150,7 @@ class FoundryAgent:
         try:
             client = LogicAppsClient(config)
 
-            def tool_function(**kwargs: Any) -> Dict[str, Any]:
+            def tool_function(**kwargs: Any) -> dict[str, Any]:
                 """Wrapper function for Logic App workflow invocation."""
                 logger.info(f"Invoking Logic App tool: {name}")
                 try:
@@ -186,16 +183,14 @@ class FoundryAgent:
             logger.info(f"Registered Logic App tool: {name}")
         except Exception as e:
             logger.error(f"Failed to register Logic App tool '{name}': {str(e)}")
-            raise ValueError(
-                f"Logic App tool registration failed for '{name}': {str(e)}"
-            ) from e
+            raise ValueError(f"Logic App tool registration failed for '{name}': {str(e)}") from e
 
     def register_custom_tool(
         self,
         name: str,
         function: Callable,
         description: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
     ) -> None:
         """Register a custom Python function as a tool.
 
@@ -207,18 +202,14 @@ class FoundryAgent:
         """
         try:
             self._tools[name] = function
-            function_tool = FunctionTool(
-                name=name, description=description, parameters=parameters
-            )
+            function_tool = FunctionTool(name=name, description=description, parameters=parameters)
             self._function_tools.append(function_tool)
             logger.info(f"Registered custom tool: {name}")
         except Exception as e:
             logger.error(f"Failed to register custom tool '{name}': {str(e)}")
-            raise ValueError(
-                f"Custom tool registration failed for '{name}': {str(e)}"
-            ) from e
+            raise ValueError(f"Custom tool registration failed for '{name}': {str(e)}") from e
 
-    def create_agent(self, name: Optional[str] = None) -> str:
+    def create_agent(self, name: str | None = None) -> str:
         """Create an agent with registered tools using Microsoft Agent Framework.
 
         :param name: Optional custom name for the agent. Defaults to "Azure Tools Agent".
@@ -242,9 +233,7 @@ class FoundryAgent:
             logger.error(f"Failed to create agent '{agent_name}': {str(e)}")
             raise RuntimeError(f"Agent creation failed: {str(e)}") from e
 
-    def run_agent(
-        self, agent_id: str, user_message: str, thread_id: Optional[str] = None
-    ) -> str:
+    def run_agent(self, agent_id: str, user_message: str, thread_id: str | None = None) -> str:
         """Run the agent with a user message.
 
         :param agent_id: The unique identifier of the agent to execute.
@@ -265,9 +254,7 @@ class FoundryAgent:
                 thread_id=thread_id, role="user", content=user_message
             )
 
-            run = self._client.agents.create_and_process_run(
-                thread_id=thread_id, agent_id=agent_id
-            )
+            run = self._client.agents.create_and_process_run(thread_id=thread_id, agent_id=agent_id)
 
             logger.info(f"Agent run completed with status: {run.status}")
 
@@ -285,7 +272,7 @@ class FoundryAgent:
             logger.error(f"Failed to run agent {agent_id}: {str(e)}")
             raise RuntimeError(f"Agent execution failed: {str(e)}") from e
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """Get a list of all registered tools.
 
         :return: List of tool names currently registered with the agent.

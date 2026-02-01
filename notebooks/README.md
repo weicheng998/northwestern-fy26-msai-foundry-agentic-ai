@@ -27,6 +27,16 @@ Orchestrate multiple agents to solve complex tasks collaboratively.
 |-----|----------------|
 | [Lab 6](lab6_multi_agent_orchestration.ipynb) | Multi-agent orchestration patterns |
 
+## Part 4: Operationalization
+
+Add safety controls, testing, and observability to production AI systems.
+
+| Lab | What You Build |
+|-----|----------------|
+| [Lab 7](lab7_agent_guardrails.ipynb) | Defense-in-depth guardrails for agents |
+| [Lab 8](lab8_safety_evaluations.ipynb) | Safety evaluations and red teaming |
+| [Lab 9](lab9_tracing_observability.ipynb) | Tracing and observability with OpenTelemetry |
+
 ## Learning Path
 
 ```
@@ -51,6 +61,27 @@ Orchestrate multiple agents to solve complex tasks collaboratively.
                     │    • Group Chat Pattern             │
                     │    • Magentic Pattern               │
                     │    • Handoff Pattern                │
+                    └──────────────────┬──────────────────┘
+                                       │
+                                       ▼
+                    ┌─────────────────────────────────────┐
+                    │  Part 4: Operationalization         │
+                    │                                     │
+                    │  Lab 7 (Guardrails)                 │
+                    │    • Defense-in-depth               │
+                    │    • Content safety                 │
+                    │    • Jailbreak detection            │
+                    │    • Voice/audio patterns           │
+                    │                                     │
+                    │  Lab 8 (Evaluations)                │
+                    │    • Quality metrics                │
+                    │    • Safety evaluators              │
+                    │    • Red teaming                    │
+                    │                                     │
+                    │  Lab 9 (Observability)              │
+                    │    • OpenTelemetry tracing          │
+                    │    • Azure Monitor                  │
+                    │    • Custom spans                   │
                     └─────────────────────────────────────┘
 ```
 
@@ -59,3 +90,5 @@ Orchestrate multiple agents to solve complex tasks collaboratively.
 **Part 2** (Labs 4-5): Build an MCP server, then connect an agent using the MCP protocol.
 
 **Part 3** (Lab 6): Extend single agents into multi-agent systems using orchestration patterns.
+
+**Part 4** (Labs 7-9): Add guardrails, run evaluations, and enable observability before deployment.

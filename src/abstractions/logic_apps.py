@@ -6,8 +6,9 @@ as tools within an AI Foundry agent workflow.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from datetime import UTC
 from enum import Enum
+from typing import Any
 
 import aiohttp
 import requests
@@ -40,9 +41,9 @@ class LogicAppConfig(BaseModel):
     """
 
     workflow_url: str = Field(..., description="Logic App HTTP trigger URL")
-    subscription_id: Optional[str] = Field(None, description="Azure subscription ID")
-    resource_group: Optional[str] = Field(None, description="Resource group name")
-    workflow_name: Optional[str] = Field(None, description="Logic App workflow name")
+    subscription_id: str | None = Field(None, description="Azure subscription ID")
+    resource_group: str | None = Field(None, description="Resource group name")
+    workflow_name: str | None = Field(None, description="Logic App workflow name")
     use_managed_identity: bool = Field(
         False, description="Use Azure Managed Identity for authentication"
     )
@@ -79,7 +80,7 @@ class LogicAppsClient:
         """
         try:
             self.config = config
-            self._credential: Optional[DefaultAzureCredential] = None
+            self._credential: DefaultAzureCredential | None = None
 
             if self.config.use_managed_identity:
                 self._credential = DefaultAzureCredential()
@@ -90,7 +91,7 @@ class LogicAppsClient:
             logger.error(f"Failed to initialize Logic Apps client: {str(e)}")
             raise ValueError(f"Client initialization failed: {str(e)}") from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get HTTP headers for the request.
 
         :return: Dictionary containing standard HTTP headers.
@@ -100,8 +101,8 @@ class LogicAppsClient:
         return headers
 
     def trigger_workflow(
-        self, payload: Dict[str, Any], wait_for_completion: bool = False
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any], wait_for_completion: bool = False
+    ) -> dict[str, Any]:
         """Trigger a Logic App workflow synchronously.
 
         :param payload: JSON payload to send to the workflow trigger.
@@ -129,9 +130,7 @@ class LogicAppsClient:
             except ValueError:
                 result = {"status": "triggered", "status_code": response.status_code}
 
-            logger.info(
-                f"Workflow triggered successfully. Status: {response.status_code}"
-            )
+            logger.info(f"Workflow triggered successfully. Status: {response.status_code}")
 
             if wait_for_completion:
                 logger.warning(
@@ -145,8 +144,8 @@ class LogicAppsClient:
             raise
 
     async def trigger_workflow_async(
-        self, payload: Dict[str, Any], wait_for_completion: bool = False
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any], wait_for_completion: bool = False
+    ) -> dict[str, Any]:
         """Trigger a Logic App workflow asynchronously.
 
         Args:
@@ -159,9 +158,7 @@ class LogicAppsClient:
         Raises:
             aiohttp.ClientError: If the request fails.
         """
-        logger.info(
-            f"Triggering Logic App workflow asynchronously: {self.config.workflow_url}"
-        )
+        logger.info(f"Triggering Logic App workflow asynchronously: {self.config.workflow_url}")
         logger.debug(
             f"Payload keys: {list(payload.keys())}, wait_for_completion: {wait_for_completion}"
         )
@@ -182,9 +179,7 @@ class LogicAppsClient:
                     except ValueError:
                         result = {"status": "triggered", "status_code": response.status}
 
-                    logger.info(
-                        f"Async workflow triggered successfully. Status: {response.status}"
-                    )
+                    logger.info(f"Async workflow triggered successfully. Status: {response.status}")
 
                     if wait_for_completion:
                         logger.warning(
@@ -194,9 +189,7 @@ class LogicAppsClient:
                     return result
 
         except aiohttp.ClientError as e:
-            logger.error(
-                f"Failed to trigger Logic App workflow asynchronously: {str(e)}"
-            )
+            logger.error(f"Failed to trigger Logic App workflow asynchronously: {str(e)}")
             raise
 
 
@@ -226,9 +219,7 @@ class WorkflowOrchestrator:
         self.client = LogicAppsClient(config)
         logger.info("Initialized WorkflowOrchestrator")
 
-    def execute_workflow(
-        self, workflow_type: str, data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def execute_workflow(self, workflow_type: str, data: dict[str, Any]) -> dict[str, Any]:
         """Execute a Logic App workflow with specified type and data.
 
         Args:
@@ -261,9 +252,9 @@ class WorkflowOrchestrator:
         Returns:
             ISO formatted timestamp string.
         """
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        return datetime.now(timezone.utc).isoformat()
+        return datetime.now(UTC).isoformat()
 
 
 class NotificationWorkflow:
@@ -295,7 +286,7 @@ class NotificationWorkflow:
 
     def send_notification(
         self, recipient: str, subject: str, message: str, priority: str = "normal"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Send a notification through the Logic App workflow.
 
         Args:

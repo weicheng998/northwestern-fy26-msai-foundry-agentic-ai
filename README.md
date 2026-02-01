@@ -50,6 +50,7 @@ See the full assignment details: **[Assignments](docs/asigments.md)**
 |------|-------|-----|
 | Week 3 | Single Agent + External Tools | Labs 1-5 |
 | Week 4 | Multi-Agent Orchestration | Lab 6 |
+| Week 5 | Operationalization | Labs 7-9 |
 
 ## Labs (Divide and Conquer)
 
@@ -79,6 +80,15 @@ Coordinate multiple agents to solve complex problems.
 |-----|-------------------|
 | [Lab 6: Multi-Agent Orchestration](notebooks/lab6_multi_agent_orchestration.ipynb) | Implement 5 orchestration patterns (Concurrent, Sequential, Group Chat, Magentic, Handoff) |
 
+### Part 4: Operationalization (Labs 7-9)
+Add safety, evaluation, and observability for production deployment.
+
+| Lab | What You'll Build |
+|-----|-------------------|
+| [Lab 7: Guardrails](notebooks/lab7_agent_guardrails.ipynb) | Defense-in-depth safety controls and content filtering |
+| [Lab 8: Evaluations](notebooks/lab8_safety_evaluations.ipynb) | Quality metrics, custom evaluators, and red teaming |
+| [Lab 9: Observability](notebooks/lab9_tracing_observability.ipynb) | OpenTelemetry tracing and Azure Monitor integration |
+
 **Learning Path:**
 ```
 ┌─────────────────────────────────────┐     ┌─────────────────────────────────┐
@@ -98,20 +108,35 @@ Coordinate multiple agents to solve complex problems.
                     │  Lab 6 (Multi-Agent Orchestration)  │
                     │  • Concurrent, Sequential           │
                     │  • Group Chat, Magentic, Handoff    │
-                    │  • Custom WorkflowBuilder           │
+                    └──────────────────┬──────────────────┘
+                                       │
+                                       ▼
+                    ┌─────────────────────────────────────┐
+                    │  Part 4: Operationalization (Week 5)│
+                    │                                     │
+                    │  Lab 7 (Guardrails)                 │
+                    │  Lab 8 (Evaluations & Red Teaming)  │
+                    │  Lab 9 (Tracing & Observability)    │
                     └─────────────────────────────────────┘
 ```
 
-> **Tip**: Part 1 teaches HTTP tool integration. Part 2 teaches MCP. Part 3 teaches multi-agent coordination.
+> **Tip**: Part 1 teaches HTTP tools. Part 2 teaches MCP. Part 3 teaches multi-agent. Part 4 teaches production readiness.
 
 ## Getting Started
 
 ```bash
 # Clone and install
 git clone <repo-url>
-cd northwestern-msai-foundry-agent-tool-extension
-pip install -r requirements.txt
+cd northwestern-fy26-msai-foundry-agentic-ai
+
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Setup environment and install dependencies
+uv sync --all-extras --dev
 ```
+
+See the full [Quick Start Guide](docs/quickstart.md) for detailed setup instructions.
 
 Then open the notebooks and follow along!
 
